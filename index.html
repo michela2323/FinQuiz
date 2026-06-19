@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💰 FinQuiz — Finanzas Personales</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f0f4f8;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .header h1 { font-size: 1.4rem; font-weight: 700; color: #1a1a2e; }
+  .header p { font-size: 0.85rem; color: #888; margin-top: 4px; }
+
+  /* Progress */
+  .progress-bar {
+    background: #e8ecf0;
+    border-radius: 99px;
+    height: 6px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #4f46e5;
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  /* Pregunta */
+  .question-num { font-size: 0.75rem; color: #888; margin-bottom: 6px; }
+  .question-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
+
+  /* Opciones */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    padding: 12px 16px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #333;
+    background: white;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .option:hover:not(:disabled) { border-color: #4f46e5; background: #f5f3ff; }
+  .option.correct  { border-color: #16a34a; background: #f0fdf4; color: #15803d; }
+  .option.wrong    { border-color: #dc2626; background: #fef2f2; color: #b91c1c; }
+  .option:disabled { cursor: default; }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 1rem;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok  { background: #f0fdf4; color: #15803d; border-left: 3px solid #16a34a; }
+  .feedback.bad { background: #fef2f2; color: #b91c1c; border-left: 3px solid #dc2626; }
+
+  /* Botón siguiente */
+  .btn-next {
+    margin-top: 1.25rem;
+    width: 100%;
+    padding: 12px;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: none;
+    transition: background 0.15s;
+  }
+  .btn-next:hover { background: #4338ca; }
+  .btn-next.show { display: block; }
+
+  /* Resultado final */
+  .result { text-align: center; padding: 1rem 0; display: none; }
+  .result.show { display: block; }
+  .result .big { font-size: 3rem; margin-bottom: 0.5rem; }
+  .result h2 { font-size: 1.3rem; font-weight: 700; color: #1a1a2e; }
+  .result p  { color: #666; font-size: 0.9rem; margin-top: 6px; line-height: 1.5; }
+
+  .score-box {
+    display: inline-block;
+    margin: 1rem 0;
+    padding: 10px 28px;
+    background: #f5f3ff;
+    border-radius: 99px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #4f46e5;
+  }
+
+  .btn-restart {
+    margin-top: 0.75rem;
+    padding: 11px 28px;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-restart:hover { background: #4338ca; }
+
+  /* Ocultar sección juego */
+  #game.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="header">
+    <h1>💰 FinQuiz</h1>
+    <p>Ponete a prueba en finanzas personales</p>
+  </div>
+
+  <!-- Juego -->
+  <div id="game">
+    <div class="progress-bar">
+      <div class="progress-fill" id="prog"></div>
+    </div>
+
+    <div class="question-num" id="q-num">Pregunta 1 de 6</div>
+    <div class="question-text" id="q-text"></div>
+
+    <div class="options" id="options"></div>
+
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btn-next">Siguiente →</button>
+  </div>
+
+  <!-- Resultado -->
+  <div class="result" id="result">
+    <div class="big" id="r-emoji">🎉</div>
+    <h2 id="r-title">¡Terminaste!</h2>
+    <p id="r-msg"></p>
+    <div class="score-box" id="r-score">0 / 6</div>
+    <br>
+    <button class="btn-restart" onclick="init()">Jugar de nuevo</button>
+  </div>
+
+</div>
+
+<script>
+const preguntas = [
+  {
+    q: "¿Cuánto se recomienda ahorrar mínimo de tu sueldo cada mes?",
+    ops: ["5%", "10%", "25%", "50%"],
+    ok: 1,
+    fb: "La regla estándar es guardar al menos el 10% del ingreso mensual. Muchos expertos recomiendan el 20% si es posible."
+  },
+  {
+    q: "Tenés una deuda de tarjeta al 150% TNA. ¿Qué conviene más?",
+    ops: ["Pagar solo el mínimo", "Ignorarla este mes", "Pagarla completa cuanto antes", "Sacar otra tarjeta para financiarla"],
+    ok: 2,
+    fb: "La deuda de tarjeta es la más cara que existe. Cada mes que no pagás el total, el saldo restante crece a una tasa altísima."
+  },
+  {
+    q: "¿Para qué sirve un 'fondo de emergencia'?",
+    ops: ["Para invertir en acciones", "Para cubrir imprevistos sin endeudarse", "Para vacaciones", "Para pagar el alquiler"],
+    ok: 1,
+    fb: "El fondo de emergencia (3 a 6 sueldos) existe para absorber imprevistos —reparaciones, salud, desempleo— sin tener que endeudarte."
+  },
+  {
+    q: "¿Qué porcentaje máximo de tu ingreso debería ir al alquiler o hipoteca?",
+    ops: ["50%", "40%", "30%", "20%"],
+    ok: 2,
+    fb: "La regla del 30%: destinar más que eso a vivienda deja muy poco margen para ahorro, comida, imprevistos y esparcimiento."
+  },
+  {
+    q: "En Argentina con inflación alta, guardar dinero en efectivo significa…",
+    ops: ["Que está seguro y disponible", "Que pierde poder adquisitivo cada mes", "Que genera intereses", "Que se valoriza con el dólar"],
+    ok: 1,
+    fb: "Con 4–5% de inflación mensual, $100.000 quietos valen menos el próximo mes. Invertirlos en un FCI Money Market al menos empata la inflación."
+  },
+  {
+    q: "¿Qué es 'pagarte primero'?",
+    ops: [
+      "Gastarte el sueldo en lo que querés antes de pagar deudas",
+      "Apartar el ahorro apenas cobrás, antes de gastar",
+      "Pagar el alquiler antes que la tarjeta",
+      "Darte un premio al final del mes"
+    ],
+    ok: 1,
+    fb: "Pagarte primero = apartar el ahorro apenas entra el sueldo, antes de cualquier gasto. Así el ahorro sucede sí o sí, no 'si sobra'."
+  }
+];
+
+let idx = 0, puntaje = 0;
+
+function init() {
+  idx = 0; puntaje = 0;
+  document.getElementById('game').classList.remove('hidden');
+  document.getElementById('result').classList.remove('show');
+  render();
+}
+
+function render() {
+  const p = preguntas[idx];
+  const total = preguntas.length;
+
+  document.getElementById('prog').style.width = (idx / total * 100) + '%';
+  document.getElementById('q-num').textContent = `Pregunta ${idx + 1} de ${total}`;
+  document.getElementById('q-text').textContent = p.q;
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback'; fb.textContent = '';
+  document.getElementById('btn-next').className = 'btn-next';
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  p.ops.forEach((txt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.textContent = txt;
+    btn.onclick = () => elegir(i);
+    opts.appendChild(btn);
+  });
+}
+
+function elegir(i) {
+  const p = preguntas[idx];
+  const btns = document.querySelectorAll('.option');
+  btns.forEach(b => b.disabled = true);
+  btns[i].classList.add(i === p.ok ? 'correct' : 'wrong');
+  if (i === p.ok) { btns[p.ok].classList.add('correct'); puntaje++; }
+  else btns[p.ok].classList.add('correct');
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (i === p.ok ? 'ok' : 'bad');
+  fb.textContent = (i === p.ok ? '✓ ' : '✗ ') + p.fb;
+  document.getElementById('btn-next').className = 'btn-next show';
+}
+
+document.getElementById('btn-next').addEventListener('click', () => {
+  idx++;
+  if (idx >= preguntas.length) mostrarResultado();
+  else render();
+});
+
+function mostrarResultado() {
+  document.getElementById('prog').style.width = '100%';
+  document.getElementById('game').classList.add('hidden');
+  const r = document.getElementById('result');
+  r.className = 'result show';
+
+  const pct = puntaje / preguntas.length;
+  let emoji, titulo, msg;
+  if (pct === 1)        { emoji='🏆'; titulo='¡Perfecto!'; msg='Respondiste todo bien. Tenés bases financieras muy sólidas.'; }
+  else if (pct >= 0.66) { emoji='👍'; titulo='¡Muy bien!'; msg='Conocés los fundamentos. Revisá los errores para cerrar esas brechas.'; }
+  else if (pct >= 0.33) { emoji='📚'; titulo='Vas por buen camino'; msg='Algunas respuestas acertadas, pero hay conceptos clave para reforzar.'; }
+  else                  { emoji='💡'; titulo='Hora de aprender'; msg='Estas preguntas muestran áreas importantes para mejorar tu salud financiera.'; }
+
+  document.getElementById('r-emoji').textContent = emoji;
+  document.getElementById('r-title').textContent = titulo;
+  document.getElementById('r-msg').textContent = msg;
+  document.getElementById('r-score').textContent = `${puntaje} / ${preguntas.length} correctas`;
+}
+
+init();
+</script>
+</body>
+</html>
