@@ -5,144 +5,227 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>💰 FinQuiz — Finanzas Personales</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    font-family: system-ui, sans-serif;
-    background: #f0f4f8;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
+body {
+  font-family: system-ui, sans-serif;
+  background: #f0f4f8;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
 
-  .card {
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    max-width: 520px;
-    width: 100%;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-  }
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
 
-  /* Header */
-  .header { text-align: center; margin-bottom: 1.5rem; }
-  .header h1 { font-size: 1.4rem; font-weight: 700; color: #1a1a2e; }
-  .header p { font-size: 0.85rem; color: #888; margin-top: 4px; }
+.header { text-align: center; margin-bottom: 1.5rem; }
+.header h1 { font-size: 1.4rem; font-weight: 700; color: #1a1a2e; }
+.header p  { font-size: 0.85rem; color: #888; margin-top: 4px; }
 
-  /* Progress */
-  .progress-bar {
-    background: #e8ecf0;
-    border-radius: 99px;
-    height: 6px;
-    margin-bottom: 1.5rem;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: #4f46e5;
-    border-radius: 99px;
-    transition: width 0.4s ease;
-  }
+.progress-bar {
+  background: #e8ecf0; border-radius: 99px;
+  height: 6px; margin-bottom: 1.5rem; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: #4f46e5;
+  border-radius: 99px; transition: width 0.4s ease;
+}
 
-  /* Pregunta */
-  .question-num { font-size: 0.75rem; color: #888; margin-bottom: 6px; }
-  .question-text {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #1a1a2e;
-    line-height: 1.5;
-    margin-bottom: 1.25rem;
-  }
+.question-num { font-size: 0.75rem; color: #888; margin-bottom: 6px; }
+.question-text {
+  font-size: 1.05rem; font-weight: 600;
+  color: #1a1a2e; line-height: 1.5; margin-bottom: 1.25rem;
+}
 
-  /* Opciones */
-  .options { display: flex; flex-direction: column; gap: 10px; }
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option {
+  padding: 12px 16px; border: 1.5px solid #e0e0e0;
+  border-radius: 10px; cursor: pointer; font-size: 0.9rem;
+  color: #333; background: white; text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+.option:hover:not(:disabled) { border-color: #4f46e5; background: #f5f3ff; }
+.option.correct { border-color: #16a34a; background: #f0fdf4; color: #15803d; }
+.option.wrong   { border-color: #dc2626; background: #fef2f2; color: #b91c1c; }
+.option:disabled { cursor: default; }
 
-  .option {
-    padding: 12px 16px;
-    border: 1.5px solid #e0e0e0;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: #333;
-    background: white;
-    text-align: left;
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .option:hover:not(:disabled) { border-color: #4f46e5; background: #f5f3ff; }
-  .option.correct  { border-color: #16a34a; background: #f0fdf4; color: #15803d; }
-  .option.wrong    { border-color: #dc2626; background: #fef2f2; color: #b91c1c; }
-  .option:disabled { cursor: default; }
+.feedback {
+  margin-top: 1rem; padding: 12px 14px;
+  border-radius: 10px; font-size: 0.85rem;
+  line-height: 1.5; display: none;
+}
+.feedback.show { display: block; }
+.feedback.ok  { background: #f0fdf4; color: #15803d; border-left: 3px solid #16a34a; }
+.feedback.bad { background: #fef2f2; color: #b91c1c; border-left: 3px solid #dc2626; }
 
-  /* Feedback */
-  .feedback {
-    margin-top: 1rem;
-    padding: 12px 14px;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    display: none;
-  }
-  .feedback.show { display: block; }
-  .feedback.ok  { background: #f0fdf4; color: #15803d; border-left: 3px solid #16a34a; }
-  .feedback.bad { background: #fef2f2; color: #b91c1c; border-left: 3px solid #dc2626; }
+.btn-next {
+  margin-top: 1.25rem; width: 100%; padding: 12px;
+  background: #4f46e5; color: white; border: none;
+  border-radius: 10px; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer; display: none; transition: background 0.15s;
+}
+.btn-next:hover { background: #4338ca; }
+.btn-next.show { display: block; }
 
-  /* Botón siguiente */
-  .btn-next {
-    margin-top: 1.25rem;
-    width: 100%;
-    padding: 12px;
-    background: #4f46e5;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: none;
-    transition: background 0.15s;
-  }
-  .btn-next:hover { background: #4338ca; }
-  .btn-next.show { display: block; }
+/* Pantalla nombre (antes del quiz) */
+#pantalla-nombre { text-align: center; }
+#pantalla-nombre h2 { font-size: 1.1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
+#pantalla-nombre p  { font-size: 0.85rem; color: #888; margin-bottom: 1.25rem; }
+#pantalla-nombre input {
+  width: 100%; padding: 11px 14px; border: 1.5px solid #e0e0e0;
+  border-radius: 10px; font-size: 0.95rem; color: #1a1a2e;
+  outline: none; margin-bottom: 12px;
+  transition: border-color 0.15s;
+}
+#pantalla-nombre input:focus { border-color: #4f46e5; }
 
-  /* Resultado final */
-  .result { text-align: center; padding: 1rem 0; display: none; }
-  .result.show { display: block; }
-  .result .big { font-size: 3rem; margin-bottom: 0.5rem; }
-  .result h2 { font-size: 1.3rem; font-weight: 700; color: #1a1a2e; }
-  .result p  { color: #666; font-size: 0.9rem; margin-top: 6px; line-height: 1.5; }
+/* Resultado */
+.result { text-align: center; padding: 1rem 0; display: none; }
+.result.show { display: block; }
+.result .big { font-size: 3rem; margin-bottom: 0.5rem; }
+.result h2   { font-size: 1.3rem; font-weight: 700; color: #1a1a2e; }
+.result p    { color: #666; font-size: 0.9rem; margin-top: 6px; line-height: 1.5; }
+.score-box {
+  display: inline-block; margin: 1rem 0;
+  padding: 10px 28px; background: #f5f3ff;
+  border-radius: 99px; font-size: 1.1rem;
+  font-weight: 700; color: #4f46e5;
+}
 
-  .score-box {
-    display: inline-block;
-    margin: 1rem 0;
-    padding: 10px 28px;
-    background: #f5f3ff;
-    border-radius: 99px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #4f46e5;
-  }
+.btn-group { display: flex; flex-direction: column; gap: 8px; margin-top: 1rem; }
+.btn-primary {
+  padding: 11px 28px; background: #4f46e5; color: white;
+  border: none; border-radius: 10px; font-size: 0.9rem;
+  font-weight: 600; cursor: pointer; width: 100%;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: #4338ca; }
+.btn-secondary {
+  padding: 11px 28px; background: white; color: #4f46e5;
+  border: 1.5px solid #4f46e5; border-radius: 10px;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer; width: 100%;
+  transition: background 0.15s;
+}
+.btn-secondary:hover { background: #f5f3ff; }
 
-  .btn-restart {
-    margin-top: 0.75rem;
-    padding: 11px 28px;
-    background: #4f46e5;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .btn-restart:hover { background: #4338ca; }
+/* ── CERTIFICADO ── */
+#cert-wrap { display: none; }
+#cert-wrap.show { display: block; }
 
-  /* Ocultar sección juego */
-  #game.hidden { display: none; }
+#certificado {
+  margin-top: 1.5rem;
+  border: 3px solid #4f46e5;
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  position: relative;
+  background: white;
+}
+
+/* Marco decorativo interior */
+#certificado::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.cert-seal {
+  font-size: 3rem;
+  margin-bottom: 0.25rem;
+}
+.cert-org {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #4f46e5;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.cert-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 0.25rem;
+}
+.cert-sub {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 1.25rem;
+}
+.cert-otorgado {
+  font-size: 0.78rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+.cert-nombre {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #4f46e5;
+  font-style: italic;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #e0e7ff;
+  padding-bottom: 0.75rem;
+}
+.cert-body {
+  font-size: 0.82rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.cert-score {
+  display: inline-block;
+  background: #f5f3ff;
+  color: #4f46e5;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 5px 18px;
+  border-radius: 99px;
+  margin-bottom: 1.25rem;
+}
+.cert-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e7ff;
+  font-size: 0.72rem;
+  color: #999;
+}
+.cert-firma {
+  text-align: center;
+}
+.cert-firma-line {
+  border-top: 1px solid #ccc;
+  width: 100px;
+  margin: 0 auto 4px;
+}
+
+/* Imprimir: solo el certificado */
+@media print {
+  body { background: white; padding: 0; }
+  .card { box-shadow: none; max-width: 100%; padding: 0; }
+  .header, #game, .result, #pantalla-nombre { display: none !important; }
+  #cert-wrap { display: block !important; }
+  #certificado { border: 3px solid #4f46e5; }
+  .btn-group { display: none; }
+}
+
+#game.hidden, #pantalla-nombre.hidden { display: none; }
 </style>
 </head>
 <body>
-
 <div class="card">
 
   <div class="header">
@@ -150,29 +233,69 @@
     <p>Ponete a prueba en finanzas personales</p>
   </div>
 
-  <!-- Juego -->
-  <div id="game">
+  <!-- Paso 0: Nombre -->
+  <div id="pantalla-nombre">
+    <h2>¿Cómo te llamás?</h2>
+    <p>Tu nombre aparecerá en el certificado si superás el quiz.</p>
+    <input type="text" id="input-nombre" placeholder="Tu nombre completo" maxlength="50" />
+    <button class="btn-primary" onclick="comenzar()">Comenzar quiz →</button>
+  </div>
+
+  <!-- Paso 1: Juego -->
+  <div id="game" class="hidden">
     <div class="progress-bar">
       <div class="progress-fill" id="prog"></div>
     </div>
-
     <div class="question-num" id="q-num">Pregunta 1 de 6</div>
     <div class="question-text" id="q-text"></div>
-
     <div class="options" id="options"></div>
-
     <div class="feedback" id="feedback"></div>
     <button class="btn-next" id="btn-next">Siguiente →</button>
   </div>
 
-  <!-- Resultado -->
+  <!-- Paso 2: Resultado -->
   <div class="result" id="result">
     <div class="big" id="r-emoji">🎉</div>
     <h2 id="r-title">¡Terminaste!</h2>
     <p id="r-msg"></p>
     <div class="score-box" id="r-score">0 / 6</div>
-    <br>
-    <button class="btn-restart" onclick="init()">Jugar de nuevo</button>
+    <div class="btn-group">
+      <button class="btn-secondary" id="btn-cert" style="display:none" onclick="verCertificado()">🏅 Ver mi certificado</button>
+      <button class="btn-primary" onclick="init()">Jugar de nuevo</button>
+    </div>
+  </div>
+
+  <!-- Certificado -->
+  <div id="cert-wrap">
+    <div id="certificado">
+      <div class="cert-seal">🏅</div>
+      <div class="cert-org">FinQuiz · Educación Financiera</div>
+      <div class="cert-title">Certificado de Aprobación</div>
+      <div class="cert-sub">Finanzas Personales — Nivel Básico</div>
+      <div class="cert-otorgado">Se certifica que</div>
+      <div class="cert-nombre" id="cert-nombre">—</div>
+      <div class="cert-body">
+        ha completado satisfactoriamente el quiz de <strong>Finanzas Personales</strong>,
+        demostrando comprensión de conceptos clave como ahorro, manejo de deuda,
+        fondo de emergencia e inversión básica.
+      </div>
+      <div class="cert-score" id="cert-score">Puntaje: 0 / 6</div>
+      <div class="cert-footer">
+        <div class="cert-firma">
+          <div class="cert-firma-line"></div>
+          <div>FinQuiz</div>
+        </div>
+        <div id="cert-fecha" style="text-align:right;"></div>
+        <div class="cert-firma">
+          <div class="cert-firma-line"></div>
+          <div>Educación Financiera</div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-group" style="margin-top:1rem;">
+      <button class="btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+      <button class="btn-secondary" onclick="init()">Jugar de nuevo</button>
+    </div>
   </div>
 
 </div>
@@ -195,22 +318,22 @@ const preguntas = [
     q: "¿Para qué sirve un 'fondo de emergencia'?",
     ops: ["Para invertir en acciones", "Para cubrir imprevistos sin endeudarse", "Para vacaciones", "Para pagar el alquiler"],
     ok: 1,
-    fb: "El fondo de emergencia (3 a 6 sueldos) existe para absorber imprevistos —reparaciones, salud, desempleo— sin tener que endeudarte."
+    fb: "El fondo de emergencia (3 a 6 sueldos) existe para absorber imprevistos sin tener que endeudarte."
   },
   {
-    q: "¿Qué porcentaje máximo de tu ingreso debería ir al alquiler o hipoteca?",
+    q: "¿Qué porcentaje máximo del ingreso debería ir al alquiler o hipoteca?",
     ops: ["50%", "40%", "30%", "20%"],
     ok: 2,
-    fb: "La regla del 30%: destinar más que eso a vivienda deja muy poco margen para ahorro, comida, imprevistos y esparcimiento."
+    fb: "La regla del 30%: destinar más a vivienda deja muy poco margen para ahorro, comida e imprevistos."
   },
   {
     q: "En Argentina con inflación alta, guardar dinero en efectivo significa…",
     ops: ["Que está seguro y disponible", "Que pierde poder adquisitivo cada mes", "Que genera intereses", "Que se valoriza con el dólar"],
     ok: 1,
-    fb: "Con 4–5% de inflación mensual, $100.000 quietos valen menos el próximo mes. Invertirlos en un FCI Money Market al menos empata la inflación."
+    fb: "Con 4–5% de inflación mensual, $100.000 quietos valen menos el mes siguiente. Un FCI Money Market al menos empata la inflación."
   },
   {
-    q: "¿Qué es 'pagarte primero'?",
+    q: "¿Qué significa 'pagarte primero'?",
     ops: [
       "Gastarte el sueldo en lo que querés antes de pagar deudas",
       "Apartar el ahorro apenas cobrás, antes de gastar",
@@ -218,17 +341,32 @@ const preguntas = [
       "Darte un premio al final del mes"
     ],
     ok: 1,
-    fb: "Pagarte primero = apartar el ahorro apenas entra el sueldo, antes de cualquier gasto. Así el ahorro sucede sí o sí, no 'si sobra'."
+    fb: "Pagarte primero = apartar el ahorro apenas entra el sueldo. Así el ahorro sucede sí o sí, no 'si sobra'."
   }
 ];
 
-let idx = 0, puntaje = 0;
+let idx = 0, puntaje = 0, nombre = '';
+
+function comenzar() {
+  const val = document.getElementById('input-nombre').value.trim();
+  if (!val) { document.getElementById('input-nombre').focus(); return; }
+  nombre = val;
+  document.getElementById('pantalla-nombre').classList.add('hidden');
+  document.getElementById('game').classList.remove('hidden');
+  render();
+}
+
+document.getElementById('input-nombre').addEventListener('keydown', e => {
+  if (e.key === 'Enter') comenzar();
+});
 
 function init() {
   idx = 0; puntaje = 0;
-  document.getElementById('game').classList.remove('hidden');
   document.getElementById('result').classList.remove('show');
-  render();
+  document.getElementById('cert-wrap').classList.remove('show');
+  document.getElementById('pantalla-nombre').classList.remove('hidden');
+  document.getElementById('game').classList.add('hidden');
+  document.getElementById('input-nombre').value = '';
 }
 
 function render() {
@@ -236,7 +374,7 @@ function render() {
   const total = preguntas.length;
 
   document.getElementById('prog').style.width = (idx / total * 100) + '%';
-  document.getElementById('q-num').textContent = `Pregunta ${idx + 1} de ${total}`;
+  document.getElementById('q-num').textContent = 'Pregunta ' + (idx + 1) + ' de ' + total;
   document.getElementById('q-text').textContent = p.q;
 
   const fb = document.getElementById('feedback');
@@ -245,11 +383,11 @@ function render() {
 
   const opts = document.getElementById('options');
   opts.innerHTML = '';
-  p.ops.forEach((txt, i) => {
+  p.ops.forEach(function(txt, i) {
     const btn = document.createElement('button');
     btn.className = 'option';
     btn.textContent = txt;
-    btn.onclick = () => elegir(i);
+    btn.onclick = function() { elegir(i); };
     opts.appendChild(btn);
   });
 }
@@ -257,10 +395,10 @@ function render() {
 function elegir(i) {
   const p = preguntas[idx];
   const btns = document.querySelectorAll('.option');
-  btns.forEach(b => b.disabled = true);
+  btns.forEach(function(b) { b.disabled = true; });
   btns[i].classList.add(i === p.ok ? 'correct' : 'wrong');
-  if (i === p.ok) { btns[p.ok].classList.add('correct'); puntaje++; }
-  else btns[p.ok].classList.add('correct');
+  if (i === p.ok) { puntaje++; }
+  else { btns[p.ok].classList.add('correct'); }
 
   const fb = document.getElementById('feedback');
   fb.className = 'feedback show ' + (i === p.ok ? 'ok' : 'bad');
@@ -268,7 +406,7 @@ function elegir(i) {
   document.getElementById('btn-next').className = 'btn-next show';
 }
 
-document.getElementById('btn-next').addEventListener('click', () => {
+document.getElementById('btn-next').addEventListener('click', function() {
   idx++;
   if (idx >= preguntas.length) mostrarResultado();
   else render();
@@ -282,18 +420,36 @@ function mostrarResultado() {
 
   const pct = puntaje / preguntas.length;
   let emoji, titulo, msg;
-  if (pct === 1)        { emoji='🏆'; titulo='¡Perfecto!'; msg='Respondiste todo bien. Tenés bases financieras muy sólidas.'; }
-  else if (pct >= 0.66) { emoji='👍'; titulo='¡Muy bien!'; msg='Conocés los fundamentos. Revisá los errores para cerrar esas brechas.'; }
+  if (pct === 1)        { emoji='🏆'; titulo='¡Perfecto!';          msg='Respondiste todo bien. Tenés bases financieras muy sólidas.'; }
+  else if (pct >= 0.66) { emoji='👍'; titulo='¡Muy bien!';          msg='Conocés los fundamentos. Revisá los errores para cerrar esas brechas.'; }
   else if (pct >= 0.33) { emoji='📚'; titulo='Vas por buen camino'; msg='Algunas respuestas acertadas, pero hay conceptos clave para reforzar.'; }
-  else                  { emoji='💡'; titulo='Hora de aprender'; msg='Estas preguntas muestran áreas importantes para mejorar tu salud financiera.'; }
+  else                  { emoji='💡'; titulo='Hora de aprender';    msg='Estas preguntas muestran áreas importantes para mejorar tu salud financiera.'; }
 
   document.getElementById('r-emoji').textContent = emoji;
   document.getElementById('r-title').textContent = titulo;
   document.getElementById('r-msg').textContent = msg;
-  document.getElementById('r-score').textContent = `${puntaje} / ${preguntas.length} correctas`;
+  document.getElementById('r-score').textContent = puntaje + ' / ' + preguntas.length + ' correctas';
+
+  const btnCert = document.getElementById('btn-cert');
+  if (puntaje >= 4) {
+    btnCert.style.display = 'block';
+  } else {
+    btnCert.style.display = 'none';
+  }
 }
 
-init();
+function verCertificado() {
+  document.getElementById('result').classList.remove('show');
+  const wrap = document.getElementById('cert-wrap');
+  wrap.classList.add('show');
+
+  document.getElementById('cert-nombre').textContent = nombre;
+  document.getElementById('cert-score').textContent = 'Puntaje: ' + puntaje + ' / ' + preguntas.length + ' correctas';
+
+  const hoy = new Date();
+  const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+  document.getElementById('cert-fecha').textContent = hoy.toLocaleDateString('es-AR', opciones);
+}
 </script>
 </body>
 </html>
